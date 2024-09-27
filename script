@@ -1,3 +1,34 @@
-curl -X PUT -H "Authorization: token %token%" -H "Accept: application/vnd.github.v3+json" ^
-    -d "{\"message\":\"Update storage information\",\"content\":\"%base64json%\", \"sha\":\"%file_sha%\"}" ^
-    "https://api.github.com/repos/%repo%/contents/%file_path%" > response.txt
+@echo off
+setlocal
+
+REM GitHub API details
+set "token=ghp_V5Fl3OMhlr6kbSSF2Dw6DFNj9UqHMR3rvFf"  REM Your personal access token
+set "repo=fernandosang/ROG-Ally"  REM Your GitHub username and repo name
+set "file_path=Storage.json"        REM Name of the file
+
+REM Initialize variables
+set "minValue=0"
+set "color=green"
+
+REM Get storage information for SSD (DriveType=3)
+for /f "tokens=2 delims=:" %%a in ('wmic logicaldisk where "DriveType=3" get Size^, FreeSpace^, DeviceID ^| findstr /R /C:"[A-Z]"') do (
+    set "totalSize=%%a"
+    set /a "usedSpace=totalSize - freeSpace"
+)
+
+REM Calculate the used space percentage
+set /a "value=100 * usedSpace / totalSize"
+
+REM Create the JSON output
+set "json={^
+    \"postfix\": \"%%\",^
+    \"color\": \"%color%\",^
+    \"data\": {^
+        \"minValue\": %minValue%,^
+        \"value\": %value%,^
+        \"maxValue\": %totalSize%^
+    }^
+}"
+
+REM Encode JSON using PowerShell
+for /f "delims=" %%i in ('po
