@@ -2,9 +2,9 @@
 setlocal
 
 REM GitHub API details
-set "token=YOUR_PERSONAL_ACCESS_TOKEN"
-set "repo=USERNAME/REPOSITORY"  REM Replace with your GitHub username and repo name
-set "file_path=storage_info.json"
+set "token=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"  REM Your personal access token
+set "repo=fernandosang/ROG-Ally"  REM Your GitHub username and repo name
+set "file_path=Storage.json"        REM Name of the file
 
 REM Initialize variables
 set "minValue=0"
@@ -30,9 +30,9 @@ set "json={^
     }^
 }"
 
-REM Update the file on GitHub using the API
-curl -X PUT -H "Authorization: token %token%" -H "Accept: application/vnd.github.v3+json" ^
-    -d "{\"message\":\"Update storage information\",\"content\":\"%json%\"}" ^
-    "https://api.github.com/repos/%repo%/contents/%file_path%"
+REM Encode JSON using PowerShell
+for /f "delims=" %%i in ('powershell -command "[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('%json%'))"') do set "base64json=%%i"
 
-endlocal
+REM Get the current file's SHA
+set "file_sha="
+for /
