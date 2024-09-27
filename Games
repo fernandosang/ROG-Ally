@@ -1,20 +1,27 @@
 {
 "valueNameHeader": "Games",
 "valueHeader": "Storage",
-"color": "green"
+"color": "green",
 "data": [
 {
-"name":"Hogwarts Legacy"
+"name":"Hogwarts Legacy",
 "value": 85
 }
+,
+{
 "name":"God of War"
 ,"value": 90
 }
-•••
-"name":"Spider-Man"
-, "value": 75
+,
+...
+,
+{
+"name":"Spider-Man",
+"value": 75
 }
-"name":"Red Dead Redemption 2"
+,
+{
+"name":"Red Dead Redemption 2",
 "value": 60
 }
 ]
