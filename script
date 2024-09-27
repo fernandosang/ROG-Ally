@@ -2,7 +2,7 @@
 setlocal
 
 REM GitHub API details
-set "token=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"  REM Your personal access token
+set "token=YOUR_PERSONAL_ACCESS_TOKEN"  REM Your personal access token
 set "repo=fernandosang/ROG-Ally"  REM Your GitHub username and repo name
 set "file_path=Storage.json"        REM Name of the file
 
@@ -35,4 +35,24 @@ for /f "delims=" %%i in ('powershell -command "[Convert]::ToBase64String([System
 
 REM Get the current file's SHA
 set "file_sha="
-for /
+for /f "delims=" %%i in ('curl -s -H "Authorization: token %token%" -H "Accept: application/vnd.github.v3+json" ^
+    "https://api.github.com/repos/%repo%/contents/%file_path%" ^| findstr /R /C:"\"sha\""') do (
+    for /f "tokens=2 delims=:" %%j in (%%i) do set "file_sha=%%~j"
+    set "file_sha=%file_sha:~1,-1%"  REM Trim quotes
+)
+
+REM Debug output
+echo Retrieved SHA: %file_sha%
+
+REM Check if SHA was retrieved
+if "%file_sha%"=="" (
+    echo Failed to retrieve the file SHA. Make sure the file exists.
+    exit /b
+)
+
+REM Update the file on GitHub using the API
+curl -X PUT -H "Authorization: token %token%" -H "Accept: application/vnd.github.v3+json" ^
+    -d "{\"message\":\"Update storage information\",\"content\":\"%base64json%\", \"sha\":\"%file_sha%\"}" ^
+    "https://api.github.com/repos/%repo%/contents/%file_path%"
+
+endlocal
