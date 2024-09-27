@@ -1,28 +1,23 @@
 {
-"valueNameHeader": "Games",
-"valueHeader": "Storage",
-"color": "green",
-"data": [
-{
-"name":"Hogwarts Legacy",
-"value": 85
-}
-,
-{
-"name":"God of War"
-,"value": 90
-}
-,
-...
-,
-{
-"name":"Spider-Man",
-"value": 75
-}
-,
-{
-"name":"Red Dead Redemption 2",
-"value": 60
-}
-]
+  "valueNameHeader": "Games",
+  "valueHeader": "Storage",
+  "color": "green",
+  "data": [
+    {
+      "name": "Hogwarts Legacy",
+      "value": 85
+    },
+    {
+      "name": "God of War",
+      "value": 90
+    },
+    {
+      "name": "Spider-Man",
+      "value": 75
+    },
+    {
+      "name": "Red Dead Redemption 2",
+      "value": 60
+    }
+  ]
 }
