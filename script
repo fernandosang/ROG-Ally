@@ -31,4 +31,28 @@ set "json={^
 }"
 
 REM Encode JSON using PowerShell
-for /f "delims=" %%i in ('po
+for /f "delims=" %%i in ('powershell -command "[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('%json%'))"') do set "base64json=%%i"
+
+REM Get the current file's SHA
+set "file_sha="
+for /f "delims=" %%i in ('curl -s -H "Authorization: token %token%" -H "Accept: application/vnd.github.v3+json" ^
+    "https://api.github.com/repos/%repo%/contents/%file_path%" ^| findstr /R /C:"\"sha\""') do (
+    for /f "tokens=2 delims=:" %%j in (%%i) do set "file_sha=%%~j"
+    set "file_sha=%file_sha:~1,-1%"  REM Trim quotes
+)
+
+REM Debug output
+echo Retrieved SHA: %file_sha%
+
+REM Check if SHA was retrieved
+if "%file_sha%"=="" (
+    echo Failed to retrieve the file SHA. Make sure the file exists.
+    exit /b
+)
+
+REM Update the file on GitHub using the API
+curl -X PUT -H "Authorization: token %token%" -H "Accept: application/vnd.github.v3+json" ^
+    -d "{\"message\":\"Update storage information\",\"content\":\"%base64json%\", \"sha\":\"%file_sha%\"}" ^
+    "https://api.github.com/repos/%repo%/contents/%file_path%"
+
+endlocal
