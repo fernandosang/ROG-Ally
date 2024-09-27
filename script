@@ -1,44 +1,58 @@
-@echo off
-setlocal
+import requests
+import json
+import win32api
 
-REM GitHub API details
-set "token=ghp_V5Fl3OMhlr6kbSSF2Dw6DFNj9UqHMR3rvFf"  REM Your personal access token
-set "repo=fernandosang/ROG-Ally"  REM Your GitHub username and repo name
-set "file_path=Storage.json"        REM Name of the file UPDATED
+# GitHub repository information
+repository_url = "https://api.github.com/repos/fernandosang/ROG-Ally"
+access_token = "ghp_V5Fl3OMhlr6kbSSF2Dw6DFNj9UqHMR3rvFf"
 
-REM Initialize variables
-set "minValue=0"
-set "color=green"
+# Function to get available storage information
+def get_available_storage():
+    drives = win32api.GetLogicalDriveStrings()
+    drives = drives.split('\0')[:-1]
 
-REM Get storage information for SSD (DriveType=3)
-for /f "tokens=2 delims=:" %%a in ('wmic logicaldisk where "DriveType=3" get Size^, FreeSpace^, DeviceID ^| findstr /R /C:"[A-Z]"') do (
-    set "totalSize=%%a"
-    set /a "usedSpace=totalSize - freeSpace"
-)
+    storage_info = {}
+    for drive in drives:
+        try:
+            total_bytes, used_bytes, free_bytes = win32api.GetDiskFreeSpaceEx(drive)
+            storage_info[drive] = {
+                "total": free_bytes + used_bytes,
+                "used": used_bytes,
+                "free": free_bytes
+            }
+        except Exception as e:
+            print(f"Error getting information for drive {drive}: {e}")
 
-REM Calculate the used space percentage
-set /a "value=100 * usedSpace / totalSize"
+    return storage_info
 
-REM Create the JSON output
-set "json={^
-    \"postfix\": \"%%\",^
-    \"color\": \"%color%\",^
-    \"data\": {^
-        \"minValue\": %minValue%,^
-        \"value\": %value%,^
-        \"maxValue\": %totalSize%^
-    }^
-}"
+# Function to update JSON file and commit to GitHub
+def update_json_file(storage_info):
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
 
-REM Encode JSON using PowerShell
-for /f "delims=" %%i in ('powershell -command "[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('%json%'))"') do set "base64json=%%i"
+    # Get the latest commit SHA
+    response = requests.get(repository_url + "/commits/latest", headers=headers)
+    if response.status_code == 200:
+        latest_commit_sha = response.json()["sha"]
+    else:
+        print(f"Error getting latest commit SHA: {response.text}")
+        return
 
-REM Debug output for base64json
-echo Base64 JSON: %base64json%
+    # Update the JSON file
+    update_url = repository_url + "/contents/storage_info.json"
+    data = {
+        "message": "Updated storage information",
+        "content": json.dumps(storage_info).encode("utf-8").decode("unicode_escape"),
+        "sha": latest_commit_sha
+    }
+    response = requests.put(update_url, headers=headers, json=data)
+    if response.status_code == 200:
+        print("JSON file updated and committed successfully")
+    else:
+        print(f"Error updating JSON file: {response.text}")
 
-REM Create or update the file on GitHub using the API
-curl -X PUT -H "Authorization: token %token%" -H "Accept: application/vnd.github.v3+json" ^
-    -d "{\"message\":\"Update storage information\",\"content\":\"%base64json%\"}" ^
-    "https://api.github.com/repos/%repo%/contents/%file_path%"
-
-endlocal
+# Main execution
+if __name__ == "__main__":
+    storage_info = get_available_storage()
+    update_json_file(storage_info)
