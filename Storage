@@ -3,7 +3,7 @@
 "color": "green",
 "data": {
 "minValue": 0,
-"value": 320,
+"value": 10,
 "maxValue": 900
 }
 }
