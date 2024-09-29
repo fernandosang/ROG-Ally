@@ -4,20 +4,44 @@
   "color": "blue",
   "data": [
     {
-      "name": "Hogwarts Legacy",
-      "value": 85
-    },
-    {
       "name": "God of War",
-      "value": 90
+      "value": 65
     },
     {
-      "name": "Spider-Man",
-      "value": 75
+      "name": "Hogwarts Legacy",
+      "value": 71
+    },
+    {
+      "name": "Hollow Knight",
+      "value": 7.5
+    },
+    {
+      "name": "Mafia: Definitive Edition",
+      "value": 36
+    },
+    {
+      "name": "Marvel's Spider-Man Remastered",
+      "value": 66
+    },
+    {
+      "name": "Pokemon X",
+      "value": 2
     },
     {
       "name": "Red Dead Redemption 2",
-      "value": 60
+      "value": 120
+    },
+    {
+      "name": "Sekiro: Shadows Die Twice",
+      "value": 14
+    },
+    {
+      "name": "The Legend of Zelda: Breath of the Wild",
+      "value": 13
+    },
+    {
+      "name": "Watch Dogs",
+      "value": 17
     }
   ]
 }
