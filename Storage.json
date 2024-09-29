@@ -1,9 +1,9 @@
 {
-"postfix": "%",
+"postfix": "GB",
 "color": "green",
 "data": {
 "minValue": 0,
-"value": 357,
+"value": 572,
 "maxValue": 929
 }
 }
